@@ -1,0 +1,7 @@
+database = pyer_prod
+host     = localhost
+port     = 5432
+username = pba
+password = pba
+encoding = utf8
+pattern  = migrations/*.rb
