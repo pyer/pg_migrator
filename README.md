@@ -1,12 +1,12 @@
 PG Migrator
 ===========
 
-This tool provides a set of Rake tasks to apply changes on different Postgres environments.
-Every change, upgrade or rollback, is versionned.
-Each environment is described by a configuration file.
-Host, user, database name and migration SQL scripts location are defined in the configuration file.
-For example, 'config/test' is the Minitest environment used by 'rake test', 'config/uat' is a 'User Aceptance Testing' environment.
-'config/dev' is the default environment used for development.
+* This tool provides a set of Rake tasks to apply changes on different Postgres environments.
+* Every change, upgrade or rollback, is versionned.
+* Each environment is described by a configuration file.
+* Host, user, database name and migration SQL scripts location are defined in the configuration file.
+* For example, 'config/test' is the Minitest environment used by 'rake test', 'config/uat' is a 'User Aceptance Testing' environment.
+* 'config/dev' is the default environment used for development.
 
 
 Installation
@@ -71,6 +71,7 @@ Requirements
 ------------
 
 For now, database engine MUST BE Postgres.
+
 The database MUST NOT have a table called 'migrations'.
 
 
