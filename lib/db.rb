@@ -1,5 +1,5 @@
-require './lib/config.rb'
-require './lib/postgres.rb'
+require 'config'
+require 'postgres'
 
 module DB
   def DB::create(config)

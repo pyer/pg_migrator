@@ -1,4 +1,4 @@
-require './lib/db.rb'
+require 'db'
 
 desc 'Retrieves the current database version number'
 task :version => [:load_config] do

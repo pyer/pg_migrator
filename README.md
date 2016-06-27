@@ -5,74 +5,72 @@ PG Migrator
 * Every change, upgrade or rollback, is versionned.
 * Each environment is described by a configuration file.
 * Host, user, database name and migration SQL scripts location are defined in the configuration file.
-* For example, 'config/test' is the Minitest environment used by 'rake test', 'config/uat' is a 'User Aceptance Testing' environment.
+* For example, 'config/uat' is a 'User Aceptance Testing' environment.
 * 'config/dev' is the default environment used for development.
 
 
 Installation
 ------------
 
-    wget https://github.com/pyer/pg_migrator/archive/master.zip
-    unzip master.zip
+* gem install pg_migrator
 
 
 Getting started
 ---------------
 
-rake -T
+* Create a minimal Rakefile as below, in an empty directory
+* 'rake -T' displays the available tasks
+* 'rake config' displays current configuration and creates minimal 'config' file if none
+* Fill in correct values in 'config/dev' file
+* Add other 'config' files as you need
 
-    rake config        # Show configuration
-    rake databases     # Lists the databases
-    rake db:create     # Creates the current database
-    rake db:drop       # Drops the current database
-    rake db:forward    # Pushes the current database to the next version
-    rake db:migrate    # Migrate the current database to the last version
-    rake db:rollback   # Rolls the current database back to the previous version
-    rake environments  # Show environments
-    rake migrations    # Lists the current database migrations
-    rake test          # Run tests
-    rake version       # Retrieves the current database version number
+
+Minimal Rakefile
+----------------
+
+        require 'pg_migrator'
+        PGMigrator.new
 
 
 Configuration
 -------------
 
-See files in config folder.
+* See 'config/dev' file.
+* Every environment configuration file is built on the same template.
+* The name of each environment is its configuration file name.
+* Environment is select by the option 'env=name'. See examples below.
 
 
-Versionning
------------
+Migrations script files
+-----------------------
 
-Migration SQL scripts are selected by the pattern configuration parameter, the script version, the database version and the task.
-Script version is the first 3 digits of the script file name.
-Database version is the version of the last database upgrade, stored in the 'migrations' table.
-
-Script file names must be compliant with the pattern parameter and the 'xyz_comment.rb' format where xyz is the vrsion number from 000 to 999.
+Migration SQL scripts are stored in a directory compliant with the pattern configuration parameter.
+Default directory is 'migrations'.
+Each file initialize two variables '@up' and '@down' used to upgrade and rollback the database.
+Version number is the first 3 digits of the script file name.
+Script file names must be compliant with the pattern parameter and the 'xyz_comment.rb' format where xyz is the version number from '001' to '999'.
+An empty newly created database is in version '000'.
 Several files can have the same version number.
 
-Example: 002_add_id_3_in_tablename.rb
+Example: 'migrations/002_add_id_3_in_tablename.rb'
 
     @up   = "INSERT INTO tablename (id, caption) VALUES (3,'something');"
     @down = "DELETE FROM tablename WHERE id = 3;"
 
 
-See 'test/migrations' files for other examples.
+Database requirements
+---------------------
 
+* For now, database engine MUST BE Postgres.
+* The database MUST NOT have a table called 'migrations'.
+* Database version is the version of the last database upgrade, stored in the 'migrations' table.
+* An empty database is in version '000'.
 
 Options
 -------
 
-'-s' or '-q' Rake options also suppresse pg_migrator messages.
-
-'-v' verbose is default mode
-
-
-Requirements
-------------
-
-For now, database engine MUST BE Postgres.
-
-The database MUST NOT have a table called 'migrations'.
+* '-s' or '-q' Rake options also suppresse pg_migrator messages.
+* '-v' verbose is default mode
 
 
 Usage examples
