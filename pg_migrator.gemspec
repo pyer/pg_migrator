@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '~> 2'
 
   s.add_dependency 'pg', '~> 0'
+  s.add_dependency 'pyer/properties', '~> 0'
   s.add_development_dependency 'minitest', '~> 5'
 
   s.requirements  = 'Postgres'

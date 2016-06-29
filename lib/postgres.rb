@@ -1,7 +1,8 @@
+# coding: utf-8
 require 'pg'
 
+# Postgres database API
 class Postgres
-
   attr_reader :config, :connection, :status
 
   def initialize(conf, user = nil)
@@ -10,12 +11,12 @@ class Postgres
 
     begin
       if user.nil?
-        @connection = PG::Connection.new(:dbname => @config.database, :user => @config.username, :password => @config.password,
-                                         :host => @config.host, :port => @config.port)
+        @connection = PG::Connection.new(dbname: @config.database, user: @config.username, password: @config.password,
+                                         host: @config.host, port: @config.port)
       else
         # assuming user is postgres, dbname is also postgres
-        @connection = PG::Connection.new(:dbname => user, :user => user,
-                                         :host => config.host, :port => config.port)
+        @connection = PG::Connection.new(dbname: user, user: user,
+                                         host: config.host, port: config.port)
       end
     rescue PG::Error => e
       puts e.message if @config.verbose
@@ -34,7 +35,7 @@ class Postgres
 
   def finish
     @connection.finish unless @connection.nil?
-    return @status
+    @status
   end
 
   def execute(query)
@@ -46,14 +47,14 @@ class Postgres
       @status = false
       result = nil
     end
-    return result
+    result
   end
 
   def value(query)
     return '' unless @status
     begin
       result = @connection.query(query)
-      return result.getvalue(0,0).to_s
+      return result.getvalue(0, 0).to_s
     rescue PG::Error => e
       puts e.message if @config.verbose
       @status = false
@@ -64,14 +65,14 @@ class Postgres
   def update(file, update)
     puts "  execute #{file}" if @config.verbose
     eval(File.read("./#{file}"))
-    ver = file.gsub(/\D/,'')[0,3]
+    ver = file.gsub(/\D/, '')[0, 3]
     begin
       @connection.query('BEGIN;')
       if update
         query = @up
       else
         query = @down
-        ver = "%03d" % (ver.to_i - 1)
+        ver = format('%03d', ver.to_i - 1)
       end
       @connection.query(query)
       @connection.query("INSERT INTO migrations VALUES('#{ver}', now());")
@@ -81,5 +82,4 @@ class Postgres
       @connection.query('ROLLBACK;')
     end
   end
-
 end

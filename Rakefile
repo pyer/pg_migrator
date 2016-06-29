@@ -1,4 +1,4 @@
-# Rakefile
+# coding: utf-8
 require 'rake'
 require 'rake/clean'
 require 'rake/testtask'
@@ -12,7 +12,6 @@ target = "#{spec.name}-#{spec.version}.gem"
 CLEAN.include "#{spec.name}*.gem"
 
 Rake::TestTask.new do |t|
-#  t.test_files = FileList['test/test*.rb']
   # Beware: Rake.verbose can be undefined (class Object but not nil)
   if Rake.verbose == true
     t.verbose = true
@@ -34,8 +33,7 @@ task install: 'build' do
   gi.install
 end
 
-
-rakefiles = Rake::FileList["tasks/*.rake"]
+rakefiles = Rake::FileList['tasks/*.rake']
 rakefiles.each do |file|
   load "#{file}"
 end

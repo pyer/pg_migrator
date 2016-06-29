@@ -1,26 +1,28 @@
+# coding: utf-8
 require 'config'
 require 'postgres'
 
-module DB
-  def DB::create(config)
+# Database managment
+class DB
+  def self.create(config)
     pg = Postgres.new(config, 'postgres')
     pg.execute("CREATE DATABASE #{config.database} OWNER #{config.username};")
     pg.finish
-    DB::version(config) # create migrations table
-    return pg.ok?
+    DB.version(config) # create migrations table
+    pg.ok?
   end
 
-  def DB::drop(config)
+  def self.drop(config)
     pg = Postgres.new(config, 'postgres')
     pg.execute("DROP DATABASE #{config.database};")
     pg.finish
-    return pg.ok?
+    pg.ok?
   end
 
-  def DB::version(config)
+  def self.version(config)
     pg = Postgres.new(config)
-    ver = pg.value("SELECT version FROM migrations ORDER BY updated_on DESC LIMIT 1;")
-    if ver.empty? and pg.connected?
+    ver = pg.value('SELECT version FROM migrations ORDER BY updated_on DESC LIMIT 1;')
+    if ver.empty? && pg.connected?
       pg.execute("CREATE TABLE migrations (
                     version character varying NOT NULL,
                     updated_on timestamp without time zone);")
@@ -28,61 +30,59 @@ module DB
       ver = '000'
     end
     pg.finish
-    return ver
+    ver
   end
 
-  def DB::migrations(config)
+  def self.migrations(config)
+    mig = []
     pg = Postgres.new(config)
-    return [] unless pg.ok?
-    mig = pg.execute("SELECT * FROM migrations ORDER BY updated_on;")
+    mig = pg.execute('SELECT * FROM migrations ORDER BY updated_on;') if pg.ok?
     pg.finish
-    return mig
+    mig
   end
 
-  def DB::databases(config)
+  def self.databases(config)
+    dbs = []
     pg = Postgres.new(config, 'postgres')
-    return [] unless pg.ok?
-    dbs = pg.execute("SELECT * FROM pg_database ORDER BY datname;")
+    dbs = pg.execute('SELECT * FROM pg_database ORDER BY datname;') if pg_ok?
     pg.finish
-    return dbs
+    dbs
   end
 
-  def DB::migrate(config)
-    db_version = DB::version(config)
+  def self.migrate(config)
+    db_version = DB.version(config)
     return nil if db_version.empty?
     Dir[config.pattern].sort.each do |file|
-      file_version = file.gsub(/\D/,'')[0,3].to_i
-      if file_version > db_version.to_i
-        pg = Postgres.new(config)
-        pg.update(file, true)
-        pg.finish
-      end
+      file_version = file.gsub(/\D/, '')[0, 3].to_i
+      next unless file_version > db_version.to_i
+      pg = Postgres.new(config)
+      pg.update(file, true)
+      pg.finish
     end
   end
 
-  def DB::rollback(config)
-    db_version = DB::version(config)
+  def self.rollback(config)
+    db_version = DB.version(config)
     return nil if db_version.empty?
     Dir[config.pattern].sort.each do |file|
-      file_version = file.gsub(/\D/,'')[0,3]
-      if file_version == db_version
-        pg = Postgres.new(config)
-        pg.update(file, false)
-        pg.finish
-      end
+      file_version = file.gsub(/\D/, '')[0, 3]
+      next unless file_version == db_version
+      pg = Postgres.new(config)
+      pg.update(file, false)
+      pg.finish
     end
   end
 
-  def DB::forward(config)
-    db_version = DB::version(config)
+  def self.forward(config)
+    db_version = DB.version(config)
     return nil if db_version.empty?
+    db_version.next!
     Dir[config.pattern].sort.each do |file|
-      file_version = file.gsub(/\D/,'')[0,3].to_i
-      if file_version == (db_version.to_i + 1)
-        pg = Postgres.new(config)
-        pg.update(file, true)
-        pg.finish
-      end
+      file_version = file.gsub(/\D/, '')[0, 3]
+      next unless file_version == db_version
+      pg = Postgres.new(config)
+      pg.update(file, true)
+      pg.finish
     end
   end
 end

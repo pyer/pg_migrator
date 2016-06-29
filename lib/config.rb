@@ -1,7 +1,8 @@
+# coding: utf-8
 require 'pyer/properties'
 
+# Read configuration file
 class Config
-  # :table is the name of migrations table
   attr_reader :env, :host, :port, :username, :password, :database, :pattern, :verbose
 
   def initialize

@@ -1,11 +1,12 @@
+# coding: utf-8
 require 'rake'
 require 'config'
 
 @config  = nil
 
 def create_config
-  Dir.mkdir 'migrations' unless File.exists?('migrations')
-  Dir.mkdir 'config'     unless File.exists?('config')
+  Dir.mkdir 'migrations' unless File.exist?('migrations')
+  Dir.mkdir 'config'     unless File.exist?('config')
   File.open("config/#{@config.env}", 'w') do |f|
     f.write("database = \n")
     f.write("host     = localhost\n")
@@ -14,7 +15,7 @@ def create_config
     f.write("password = \n")
     f.write("encoding = utf8\n")
     f.write("pattern  = migrations/*.rb\n")
-  end  unless File.exists?("config/#{@config.env}")
+  end  unless File.exist?("config/#{@config.env}")
 end
 
 task :load_config do
@@ -26,7 +27,7 @@ task config: :load_config do
   puts "Environment : #{@config.env}"
   if @config.database.nil?
     create_config
-    puts "ERROR: empty config file"
+    puts 'ERROR: empty config file'
   else
     puts "Host        : #{@config.host}"
     puts "Port        : #{@config.port}"
@@ -38,9 +39,9 @@ end
 # Environment is defined by the ENV variable
 # For example:
 #   rake migrate env=dev
-desc "Show environments"
+desc 'Show environments'
 task environments: :load_config do
-  Rake::FileList["config/*"].each do |file|
+  Rake::FileList['config/*'].each do |file|
     puts file.split('/')[1]
   end
 end
