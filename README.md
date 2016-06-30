@@ -61,16 +61,16 @@ Beware, next version of 1.9 is 2.0 and next version of 1.09 is 1.10
 Example: version 0.02
 
 * Update parameter
-    upgrade   = migrations/\*_up_\*.sql
+    `upgrade   = migrations/\*_up_\*.sql`
 
 * Script file: migrations/0.02_up_add_id_3_in_tablename.sql
-    INSERT INTO tablename (id, caption) VALUES (3,'something');
+    `INSERT INTO tablename (id, caption) VALUES (3,'something');`
 
 * Downgrade parameter
-    downgrade = migrations/\*_down_\*.sql
+    `downgrade = migrations/\*_down_\*.sql`
 
 * Script file: migrations/0.02_down_add_id_3_in_tablename.sql
-    DELETE FROM tablename WHERE id = 3;
+    `DELETE FROM tablename WHERE id = 3;`
 
 
 Database requirements
