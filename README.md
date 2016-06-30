@@ -47,18 +47,30 @@ Configuration
 Migrations script files
 -----------------------
 
-Migration SQL scripts are stored in a directory compliant with the pattern configuration parameter.
+Migration SQL scripts are stored in a directory compliant with two configuration parameters, upgrade and downgrade.
 Default directory is 'migrations'.
-Each file initialize two variables '@up' and '@down' used to upgrade and rollback the database.
-Version number is the first 3 digits of the script file name.
-Script file names must be compliant with the pattern parameter and the 'xyz_comment.rb' format where xyz is the version number from '001' to '999'.
-An empty newly created database is in version '000'.
+Upgrade and downgrade SQL script file names must be compliant with upgrade and downgrade parameters in the configuration file.
+Version number is text between the last character '/' and next character '\_' in script file name.
+An empty newly created database is in version set by version0 parameter.
 Several files can have the same version number.
 
-Example: 'migrations/002_add_id_3_in_tablename.rb'
+Version number can be 000, 0.1.1, 0.09, 1.2a or any other text.
+Next version number is given by #next method of String object.
+Beware, next version of 1.9 is 2.0 and next version of 1.09 is 1.10
 
-    @up   = "INSERT INTO tablename (id, caption) VALUES (3,'something');"
-    @down = "DELETE FROM tablename WHERE id = 3;"
+Example: version 0.02
+
+* Update parameter
+    upgrade   = migrations/\*_up_\*.sql
+
+* Script file: migrations/0.02_up_add_id_3_in_tablename.sql
+    INSERT INTO tablename (id, caption) VALUES (3,'something');
+
+* Downgrade parameter
+    downgrade = migrations/\*_down_\*.sql
+
+* Script file: migrations/0.02_down_add_id_3_in_tablename.sql
+    DELETE FROM tablename WHERE id = 3;
 
 
 Database requirements
@@ -67,7 +79,8 @@ Database requirements
 * For now, database engine MUST BE Postgres.
 * The database MUST NOT have a table called 'migrations'.
 * Database version is the version of the last database upgrade, stored in the 'migrations' table.
-* An empty database is in version '000'.
+* Downgrade are not logged in migrations table.
+
 
 Options
 -------
