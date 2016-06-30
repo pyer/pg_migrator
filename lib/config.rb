@@ -39,6 +39,6 @@ class Config
   # Version is text between last '/' and '_'
   # File path must end with '.sql'
   def version(path)
-     path.gsub(/.*\//,'').gsub(/_.*\.sql/, '')
-   end
+    path.gsub(%r{.*/}, '').gsub(/_.*\.sql/, '')
+  end
 end

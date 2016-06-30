@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description   = 'This tool provides a set of Rake tasks to apply changes on different Postgres environments.'
   s.license       = 'MIT'
   s.files         = Dir['lib/*.rb'] + Dir['tasks/*.rake'] + ['Rakefile', 'LICENSE', 'README.md', __FILE__]
-  s.require_paths = ['lib', 'tasks']
+  s.require_paths = %w(lib tasks)
   s.required_ruby_version = '~> 2'
 
   s.add_dependency 'rake', '~> 10'

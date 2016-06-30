@@ -8,7 +8,6 @@ class Postgres
   def initialize(conf, user = nil)
     @status = true
     @config = conf
-
     begin
       if user.nil?
         @connection = PG::Connection.new(dbname: @config.database, user: @config.username, password: @config.password,
@@ -19,7 +18,7 @@ class Postgres
                                          host: config.host, port: config.port)
       end
     rescue PG::Error => e
-      puts e.message if @config.verbose
+      trace e.message
       @connection = nil
       @status = false
     end
@@ -38,11 +37,16 @@ class Postgres
     @status
   end
 
+  def trace(message)
+    puts message if @config.verbose
+  end
+
   def execute(query)
     begin
+      trace query
       result = @connection.query(query)
     rescue PG::Error => e
-      puts e.message if @config.verbose
+      trace e.message
       # puts "ERROR: failed query [#{query}]" if @config.verbose
       @status = false
       result = nil
@@ -56,9 +60,21 @@ class Postgres
       result = @connection.query(query)
       return result.getvalue(0, 0).to_s
     rescue PG::Error => e
-      puts e.message if @config.verbose
+      trace e.message
       @status = false
       return ''
+    end
+  end
+
+  def script(file)
+    query = ''
+    file.each_line do |line|
+      trace line
+      query = query + ' ' + line
+      if query.end_with?(';')
+        @connection.query(query)
+        query = ''
+      end
     end
   end
 
@@ -66,27 +82,19 @@ class Postgres
     puts "Executing #{file_name}" if @config.verbose
     ver = @config.version(file_name)
     begin
-      puts 'BEGIN;' if @config.verbose
+      trace 'BEGIN;'
       @connection.query('BEGIN;')
       file = File.open(file_name, 'r')
-      query = ''
-      file.each_line do |line|
-        puts line if @config.verbose
-        query = query + ' ' + line
-        if query.end_with?(';')
-          @connection.query(line)
-          query = ''
-        end
-      end
+      script(file)
       file.close
       @connection.query("INSERT INTO migrations VALUES('#{ver}', now());")
-      puts 'COMMIT;' if @config.verbose
+      trace 'COMMIT;'
       @connection.query('COMMIT;')
     rescue SystemCallError => e
-      puts e.message if @config.verbose
+      trace e.message
       @connection.query('ROLLBACK;')
     rescue PG::Error => e
-      puts e.message if @config.verbose
+      trace e.message
       @connection.query('ROLLBACK;')
     end
   end
