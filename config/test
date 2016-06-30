@@ -1,8 +1,8 @@
 database  = pyer_test
 host      = localhost
 port      = 5432
-username  = pba
-password  = pba
+username  = postgres
+password  = postgres
 encoding  = utf8
 version0  = 0.00
 upgrade   = test/migrations/*_up_*.sql
