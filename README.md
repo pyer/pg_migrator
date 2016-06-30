@@ -1,6 +1,9 @@
 PG Migrator
 ===========
 
+[![Gem Version](https://badge.fury.io/rb/pg_migrator.svg)](https://badge.fury.io/rb/pg_migrator)
+[![Build Status](https://travis-ci.org/pyer/pg_migrator.svg?branch=master)](https://travis-ci.org/pyer/pg_migrator)
+
 * This tool provides a set of Rake tasks to apply changes on different Postgres environments.
 * Every change, upgrade or rollback, is versionned.
 * Each environment is described by a configuration file.
