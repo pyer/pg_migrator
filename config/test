@@ -1,7 +1,9 @@
-database = pyer_test
-host     = localhost
-port     = 5432
-username = pba
-password = pba
-encoding = utf8
-pattern  = test/migrations/*.rb
+database  = pyer_test
+host      = localhost
+port      = 5432
+username  = pba
+password  = pba
+encoding  = utf8
+version0  = 0.00
+upgrade   = test/migrations/*_up_*.sql
+downgrade = test/migrations/*_down_*.sql

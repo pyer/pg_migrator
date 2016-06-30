@@ -35,7 +35,7 @@ class TestDB < Minitest::Test
 
   def test_database_version
     # database is created by setup
-    assert_equal(DB.version(@config), '000')
+    assert_equal(DB.version(@config), @config.version0)
   end
 
   def test_unknown_database_version
@@ -48,8 +48,8 @@ class TestDB < Minitest::Test
     DB.migrate(@config)
     result = DB.migrations(@config)
     assert_equal(result.ntuples, 3)
-    assert_equal(result.getvalue(0, 0), '000')
-    assert_equal(result.getvalue(2, 0), '002')
+    assert_equal(result.getvalue(0, 0), '0.00')
+    assert_equal(result.getvalue(2, 0), '0.02')
   end
 
   def test_unknown_database_migrations
@@ -60,9 +60,9 @@ class TestDB < Minitest::Test
   end
 
   def test_migrate
-    assert_equal(DB.version(@config), '000')
+    assert_equal(DB.version(@config), '0.00')
     DB.migrate(@config)
-    assert_equal(DB.version(@config), '002')
+    assert_equal(DB.version(@config), '0.02')
   end
 
   def test_migrate_existing_database
@@ -70,28 +70,28 @@ class TestDB < Minitest::Test
     pg.execute('DROP TABLE migrations;')
     pg.finish
     DB.migrate(@config)
-    assert_equal(DB.version(@config), '002')
+    assert_equal(DB.version(@config), '0.02')
   end
 
   def test_migrate_wrong_script
-    File.rename('test/migrations/003_wrong_script.tmp', 'test/migrations/003_wrong_script.rb')
-    assert_equal(DB.version(@config), '000')
+    File.write('test/migrations/0.03_up_wrong_script.sql', 'DROP TABLE unknown_table;')
+    assert_equal(DB.version(@config), '0.00')
     DB.migrate(@config)
-    assert_equal(DB.version(@config), '002')
-    File.rename('test/migrations/003_wrong_script.rb', 'test/migrations/003_wrong_script.tmp')
+    assert_equal(DB.version(@config), '0.02')
+    File.delete('test/migrations/0.03_up_wrong_script.sql')
   end
 
   def test_rollback
-    assert_equal(DB.version(@config), '000')
+    assert_equal(DB.version(@config), '0.00')
     DB.migrate(@config)
-    assert_equal(DB.version(@config), '002')
+    assert_equal(DB.version(@config), '0.02')
     DB.rollback(@config)
-    assert_equal(DB.version(@config), '001')
+    assert_equal(DB.version(@config), '0.01')
   end
 
   def test_forward
-    assert_equal(DB.version(@config), '000')
+    assert_equal(DB.version(@config), '0.00')
     DB.forward(@config)
-    assert_equal(DB.version(@config), '001')
+    assert_equal(DB.version(@config), '0.01')
   end
 end

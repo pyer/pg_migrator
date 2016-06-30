@@ -4,20 +4,6 @@ require 'config'
 
 @config  = nil
 
-def create_config
-  Dir.mkdir 'migrations' unless File.exist?('migrations')
-  Dir.mkdir 'config'     unless File.exist?('config')
-  File.open("config/#{@config.env}", 'w') do |f|
-    f.write("database = \n")
-    f.write("host     = localhost\n")
-    f.write("port     = 5432\n")
-    f.write("username = \n")
-    f.write("password = \n")
-    f.write("encoding = utf8\n")
-    f.write("pattern  = migrations/*.rb\n")
-  end  unless File.exist?("config/#{@config.env}")
-end
-
 task :load_config do
   @config = Config.new
 end
@@ -26,7 +12,7 @@ desc 'Show configuration'
 task config: :load_config do
   puts "Environment : #{@config.env}"
   if @config.database.nil?
-    create_config
+    @config.create
     puts 'ERROR: empty config file'
   else
     puts "Host        : #{@config.host}"

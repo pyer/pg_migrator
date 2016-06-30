@@ -23,11 +23,11 @@ class DB
     pg = Postgres.new(config)
     ver = pg.value('SELECT version FROM migrations ORDER BY updated_on DESC LIMIT 1;')
     if ver.empty? && pg.connected?
+      ver = config.version0
       pg.execute("CREATE TABLE migrations (
                     version character varying NOT NULL,
                     updated_on timestamp without time zone);")
-      pg.execute("INSERT INTO migrations VALUES('000', now());")
-      ver = '000'
+      pg.execute("INSERT INTO migrations VALUES('#{ver}', now());")
     end
     pg.finish
     ver
@@ -52,23 +52,10 @@ class DB
   def self.migrate(config)
     db_version = DB.version(config)
     return nil if db_version.empty?
-    Dir[config.pattern].sort.each do |file|
-      file_version = file.gsub(/\D/, '')[0, 3].to_i
-      next unless file_version > db_version.to_i
+    Dir[config.upgrade].sort.each do |file|
+      next unless config.version(file) > db_version
       pg = Postgres.new(config)
-      pg.update(file, true)
-      pg.finish
-    end
-  end
-
-  def self.rollback(config)
-    db_version = DB.version(config)
-    return nil if db_version.empty?
-    Dir[config.pattern].sort.each do |file|
-      file_version = file.gsub(/\D/, '')[0, 3]
-      next unless file_version == db_version
-      pg = Postgres.new(config)
-      pg.update(file, false)
+      pg.update(file)
       pg.finish
     end
   end
@@ -77,11 +64,22 @@ class DB
     db_version = DB.version(config)
     return nil if db_version.empty?
     db_version.next!
-    Dir[config.pattern].sort.each do |file|
-      file_version = file.gsub(/\D/, '')[0, 3]
-      next unless file_version == db_version
+    Dir[config.upgrade].sort.each do |file|
+      next unless config.version(file) == db_version
       pg = Postgres.new(config)
-      pg.update(file, true)
+      pg.update(file)
+      pg.finish
+    end
+  end
+
+  def self.rollback(config)
+    db_version = DB.version(config)
+    return nil if db_version.empty?
+    Dir[config.downgrade].sort.each do |file|
+      next unless config.version(file) == db_version
+      pg = Postgres.new(config)
+      pg.update(file)
+      pg.execute("DELETE FROM migrations WHERE version='#{db_version}';")
       pg.finish
     end
   end

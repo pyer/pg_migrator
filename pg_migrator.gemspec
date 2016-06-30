@@ -13,8 +13,9 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib', 'tasks']
   s.required_ruby_version = '~> 2'
 
+  s.add_dependency 'rake', '~> 10'
   s.add_dependency 'pg', '~> 0'
-  s.add_dependency 'pyer/properties', '~> 0'
+  s.add_dependency 'pyer-properties', '~> 1'
   s.add_development_dependency 'minitest', '~> 5'
 
   s.requirements  = 'Postgres'

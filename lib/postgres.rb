@@ -62,21 +62,29 @@ class Postgres
     end
   end
 
-  def update(file, update)
-    puts "  execute #{file}" if @config.verbose
-    eval(File.read("./#{file}"))
-    ver = file.gsub(/\D/, '')[0, 3]
+  def update(file_name)
+    puts "Executing #{file_name}" if @config.verbose
+    ver = @config.version(file_name)
     begin
+      puts 'BEGIN;' if @config.verbose
       @connection.query('BEGIN;')
-      if update
-        query = @up
-      else
-        query = @down
-        ver = format('%03d', ver.to_i - 1)
+      file = File.open(file_name, 'r')
+      query = ''
+      file.each_line do |line|
+        puts line if @config.verbose
+        query = query + ' ' + line
+        if query.end_with?(';')
+          @connection.query(line)
+          query = ''
+        end
       end
-      @connection.query(query)
+      file.close
       @connection.query("INSERT INTO migrations VALUES('#{ver}', now());")
+      puts 'COMMIT;' if @config.verbose
       @connection.query('COMMIT;')
+    rescue SystemCallError => e
+      puts e.message if @config.verbose
+      @connection.query('ROLLBACK;')
     rescue PG::Error => e
       puts e.message if @config.verbose
       @connection.query('ROLLBACK;')

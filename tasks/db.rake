@@ -1,21 +1,22 @@
 # coding: utf-8
 require 'db'
 
-desc 'Retrieves the current database version number'
+desc 'Show the current database version'
 task version: [:load_config] do
-  puts "Environment : #{@config.env}"
-  puts "Database    : #{@config.database}"
-  puts "Version     : #{DB.version(@config)}"
+  puts "Environment  : #{@config.env}"
+  puts "Database     : #{@config.database}"
+  puts "Version      : #{DB.version(@config)}"
+  puts "Next version : #{DB.version(@config).next}"
 end
 
-desc 'Lists the current database migrations'
+desc 'List the current database migrations'
 task migrations: [:load_config] do
   DB.migrations(@config).each do |row|
     puts row['version'] + '  ' + row['updated_on']
   end
 end
 
-desc 'Lists the databases'
+desc 'List the databases'
 task databases: [:load_config] do
   DB.databases(@config).each do |row|
     puts row['datname']
@@ -23,12 +24,12 @@ task databases: [:load_config] do
 end
 
 namespace :db do
-  desc 'Creates the current database'
+  desc 'Create the current database'
   task create: [:load_config] do
     DB.create(@config)
   end
 
-  desc 'Drops the current database'
+  desc 'Drop the current database'
   task drop: [:load_config] do
     DB.drop(@config)
   end
@@ -38,12 +39,12 @@ namespace :db do
     DB.migrate(@config)
   end
 
-  desc 'Rolls the current database back to the previous version'
+  desc 'Roll the current database back to the previous version'
   task rollback: [:environment, :load_config] do
     DB.rollback(@config)
   end
 
-  desc 'Pushes the current database to the next version'
+  desc 'Push the current database to the next version'
   task forward: [:environment, :load_config] do
     DB.forward(@config)
   end
