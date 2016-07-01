@@ -5,6 +5,8 @@ require 'rake/testtask'
 require 'rubygems'
 require 'rubygems/package'
 require 'rubygems/installer'
+require './lib/config.rb'
+require './lib/db.rb'
 
 spec = Gem::Specification.load('pg_migrator.gemspec')
 target = "#{spec.name}-#{spec.version}.gem"

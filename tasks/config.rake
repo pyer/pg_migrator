@@ -1,7 +1,4 @@
 # coding: utf-8
-require 'rake'
-require 'config'
-
 @config  = nil
 
 task :load_config do

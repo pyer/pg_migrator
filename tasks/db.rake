@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'db'
 
 desc 'Show the current database version'
 task version: [:load_config] do
