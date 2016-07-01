@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name          = 'pg_migrator'
-  s.version       = '1.0.1'
+  s.version       = '1.0.2'
   s.author        = 'Pierre BAZONNARD'
   s.email         = ['pierre.bazonnard@gmail.com']
   s.homepage      = 'https://github.com/pyer/pg_migrator'
