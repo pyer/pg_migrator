@@ -30,5 +30,3 @@ task environments: :load_config do
     puts file.split('/')[1]
   end
 end
-
-task default: :config
