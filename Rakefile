@@ -41,3 +41,5 @@ begin
 rescue Gem::LoadError
   puts "Warning: Could not find 'pg_migrator'"
 end
+
+task default: :test
