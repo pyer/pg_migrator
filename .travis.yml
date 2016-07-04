@@ -5,3 +5,7 @@ rvm:
 services:
   - postgresql
 
+install:
+  - gem install pg
+  - gem install pyer/properties
+  
