@@ -5,8 +5,6 @@ require 'rake/testtask'
 require 'rubygems'
 require 'rubygems/package'
 require 'rubygems/installer'
-require './lib/config.rb'
-require './lib/db.rb'
 
 spec = Gem::Specification.load('pg_migrator.gemspec')
 target = "#{spec.name}-#{spec.version}.gem"
@@ -35,7 +33,11 @@ task install: 'build' do
   gi.install
 end
 
-rakefiles = Rake::FileList['tasks/*.rake']
-rakefiles.each do |file|
-  load "#{file}"
+# load pg_migrator rake files for local dev and test
+begin
+  Gem::Specification.find_by_name('pg_migrator')
+  require 'pg_migrator'
+  PGMigrator.new
+rescue Gem::LoadError
+  puts "Warning: Could not find 'pg_migrator'"
 end
