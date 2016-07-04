@@ -7,5 +7,5 @@ services:
 
 install:
   - gem install pg
-  - gem install pyer/properties
+  - gem install pyer-properties
   
