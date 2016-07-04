@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'config'
 require 'postgres'
 
 # Database managment
@@ -44,7 +43,7 @@ class DB
   def self.databases(config)
     dbs = []
     pg = Postgres.new(config, 'postgres')
-    dbs = pg.execute('SELECT * FROM pg_database ORDER BY datname;') if pg_ok?
+    dbs = pg.execute('SELECT * FROM pg_database ORDER BY datname;') if pg.ok?
     pg.finish
     dbs
   end

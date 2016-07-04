@@ -1,7 +1,6 @@
 # coding: utf-8
 require 'rake'
-require 'config'
-
+require_relative '../lib/config.rb'
 @config  = nil
 
 task :load_config do

@@ -1,4 +1,5 @@
 # coding: utf-8
+require_relative '../lib/db.rb'
 
 desc 'Show the current database version'
 task version: [:load_config] do
