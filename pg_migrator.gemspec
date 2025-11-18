@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name          = 'pg_migrator'
-  s.version       = '1.0.2'
+  s.version       = '1.0.3'
   s.author        = 'Pierre BAZONNARD'
   s.email         = ['pierre.bazonnard@gmail.com']
   s.homepage      = 'https://github.com/pyer/pg_migrator'
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib tasks)
   s.required_ruby_version = '~> 2'
 
-  s.add_dependency 'rake', '~> 10'
+  s.add_dependency 'rake', '>= 13.3.0'
   s.add_dependency 'pg', '~> 0'
   s.add_dependency 'pyer-properties', '~> 1'
   s.add_development_dependency 'minitest', '~> 5'
